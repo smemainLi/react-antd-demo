@@ -149,5 +149,6 @@
     "@types/styled-components": "^4.1.19",
     "node-sass": "^4.12.0",
     "sass-loader": "^8.0.0"
-  }
+  },
+  "proxy": "http://tms-pc.test.qi-cloud.com/"
 }

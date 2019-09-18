@@ -1,9 +1,13 @@
 import BgImg from '../../assets/images/bg_img.png';
-import React, { FC } from 'react';
+import React, { FC, useCallback, useEffect } from 'react';
 import styled from 'styled-components/macro';
 import TitleImg from '../../assets/images/title_img.png';
 import { Frame } from '../../components';
 import './style.scss';
+import Map from '../../components/Map';
+import { unitUrl } from '../../utils/request';
+import NumCard from '../../components/NumCard';
+import CardLayout from '../../components/CardLayout';
 
 const Container = styled.div`
   width: 100%;
@@ -34,39 +38,56 @@ const Side = styled.div`
   display: flex;
   flex-direction: column;
 `;
-const NumSide = styled.div``;
-const Waybill = styled.div`
-  width: 320px;
-  height: 130px;
-  border: 1px solid #ffffff;
-  padding: 0 10px;
+const NumSide = styled.div`
   display: flex;
   justify-content: space-between;
 `;
+const Waybill = styled.div`
+  width: 900px;
+  height: 130px;
+`;
 const Statistics = styled.div`
   width: 320px;
-  height: 550px;
+  height: 570px;
   border: 1px solid #ffffff;
   margin-top: 50px;
 `;
 
 const MapDiv = styled.div`
   width: 880px;
-  height: 730px;
+  height: 620px;
   border: 1px solid #ffffff;
 `;
 
 const Dashboard: FC = props => {
+  const getUnitData = useCallback<any>(async () => {
+    try {
+      // const result = await unitUrl();
+      const result = await unitUrl();
+      console.log(result);
+    } catch (error) {}
+  }, []);
+
+  useEffect(() => {
+    getUnitData();
+  }, []);
+
   return (
     <Container>
       <Head>佳斌物流监控系统</Head>
       <Body>
         <Frame width={1300} height={800} className="dashboard-data-graphics">
+          <Waybill>
+            <CardLayout title="运单数量" titleClassName="item-title-style">
+              <NumCard content={146862179}></NumCard>
+            </CardLayout>
+          </Waybill>
           <NumSide>
-            <Waybill></Waybill>
             <Statistics></Statistics>
+            <MapDiv>
+              <Map></Map>
+            </MapDiv>
           </NumSide>
-          <MapDiv></MapDiv>
         </Frame>
         <Side>
           <Frame width={500} height={280}></Frame>

@@ -1,7 +1,14 @@
 .dashboard-data-graphics {
   display: flex;
-  justify-content: space-between;
-  padding: 20px 40px 0;
+  flex-direction: column;
+  padding: 20px 40px 50px;
+}
+
+.item-title-style {
+  font-size: 20px;
+  color: #ffffff;
+  font-weight: bold;
+  margin-bottom: 16px;
 }
 
 .dashboard-list-style {

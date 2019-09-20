@@ -1,5 +1,5 @@
 export interface CardLayoutProps {
-  otherClassName?: string;
-  title: string;
+  cardLayoutClassName: string;
+  title: any;
   titleClassName?: string;
 }

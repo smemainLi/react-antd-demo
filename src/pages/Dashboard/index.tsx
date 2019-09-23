@@ -1,24 +1,24 @@
-import BgImg from '../../assets/images/bg_img.png';
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components/macro';
-import TitleImg from '../../assets/images/title_img.png';
-import { Frame } from '../../components';
-import './style.scss';
-import Map from '../../components/Map';
-import { unitUrl, statisticsUrl, mapListUrl, orderWaybillListUrl } from '../../utils/request';
-import NumCard from '../../components/NumCard';
-import CardLayout from '../../components/CardLayout';
-
+import BgImg from '../../assets/images/bg_img.png';
 import carrierImg from '../../assets/images/carrier_img.png';
-import driverImg from '../../assets/images/driver_img.png';
-import customerImg from '../../assets/images/customer_img.png';
-import vehicleImg from '../../assets/images/vehicle_img.png';
-import routeImg from '../../assets/images/route_img.png';
 import cityImg from '../../assets/images/city_img.png';
+import customerImg from '../../assets/images/customer_img.png';
+import driverImg from '../../assets/images/driver_img.png';
+import routeImg from '../../assets/images/route_img.png';
+import TitleImg from '../../assets/images/title_img.png';
 import tomImg from '../../assets/images/tom_img.png';
+import vehicleImg from '../../assets/images/vehicle_img.png';
+import { Frame } from '../../components';
+import CardLayout from '../../components/CardLayout';
 import LineData from '../../components/LineData';
 import ListItem from '../../components/ListItem';
+import Map from '../../components/Map';
 import { PROVINCE_DATA } from '../../components/Map/constants';
+import NumCard from '../../components/NumCard';
+import { mapListUrl, orderWaybillListUrl, statisticsUrl, unitUrl } from '../../utils/request';
+import './style.scss';
+import { Spin } from 'antd';
 
 const onTheWayList = [
   { orderWaybillNo: 'YD2019082300028', staffName: '浙江调度', city: '杭州市', date: '杭州市' },
@@ -39,6 +39,13 @@ const Container = styled.div`
   height: 100%;
   background: url(${BgImg}) no-repeat center center;
   position: fixed;
+  & .ant-spin {
+    top: 30% !important;
+
+    & .ant-spin-text {
+      text-shadow: none !important;
+    }
+  }
 `;
 
 const Head = styled.div`
@@ -56,8 +63,9 @@ const Body = styled.div`
   display: flex;
   justify-content: space-around;
   width: 100%;
+  height: 100%;
   padding: 0 20px;
-  margin-top: 12px;
+  margin: 12px 0 60px 0;
 `;
 const Side = styled.div`
   display: flex;
@@ -139,8 +147,10 @@ const ScrollList = styled.div`
   right: -18px;
 `;
 
-const Dashboard: FC = props => {
+const Dashboard: FC = () => {
+  let current = 0; // 判断用户是否不断地点击被选中的tab，如果是，不发送请求
   const [active, setActive] = useState<number>(1);
+  const [loading, setLoading] = useState<boolean>(false);
   const [waybillNum, setWaybillNum] = useState<number>(0);
   const [unitData, setUnitData] = useState<Array<any>>([]);
   const [mapData, setMapData] = useState();
@@ -154,7 +164,7 @@ const Dashboard: FC = props => {
 
   const handleTab = useCallback((value: number) => {
     setActive(value);
-    getMapData();
+    getMapData(value);
   }, []);
 
   const getUnitData = useCallback<any>(async () => {
@@ -164,11 +174,20 @@ const Dashboard: FC = props => {
     } catch (error) {}
   }, []);
 
-  const getMapData = useCallback<any>(async () => {
+  const getMapData = useCallback<any>(async (value: number) => {
     try {
-      const result = await mapListUrl({ type: active });
-      setMapData(result.data);
-    } catch (error) {}
+      if (current !== value) {
+        setLoading(true);
+        const result = await mapListUrl({ type: value });
+        setMapData(result.data);
+        setTimeout(() => {
+          setLoading(false);
+        }, 500);
+        current = value;
+      }
+    } catch (error) {
+      setLoading(false);
+    }
   }, []);
 
   const getStatisticsData = useCallback<any>(async () => {
@@ -182,15 +201,24 @@ const Dashboard: FC = props => {
     try {
       const result = await orderWaybillListUrl();
       setWaybillData(result.data.list);
-      console.log(result);
     } catch (error) {}
+  }, []);
+
+  useEffect(() => {
+    getMapData(active);
   }, []);
 
   useEffect(() => {
     getUnitData();
     getStatisticsData();
-    getMapData();
     getWaybillData();
+  }, []);
+
+  useEffect(() => {
+    setInterval(() => {
+      getStatisticsData();
+      getWaybillData();
+    }, 3000);
   }, []);
 
   useEffect(() => {
@@ -264,149 +292,151 @@ const Dashboard: FC = props => {
     if (!!areaData && areaData.length) {
       setAreaValueData(
         areaData.map(areaItem => {
-          return { name: areaItem.district, value: areaItem.number, province: areaItem.province };
+          let newName = '';
+          if (areaItem.district.indexOf('市辖区') !== -1) {
+            newName = areaItem.district.substring(0, areaItem.district.length - 3);
+          }
+          return {
+            name: newName || areaItem.district,
+            value: areaItem.number,
+            province: areaItem.province,
+            city: areaItem.city
+          };
         })
       );
     }
-  }, [provinceData]);
-
-  // useEffect(() => {
-  //   if (!!waybillData && waybillData.length) {
-  //     setWaybillList(waybillData.map((waybillItem: any) => {
-  // return { onTheWayNumber: waybillItem.orderWaybillNo , onTheWayUse:staffName, onTheWayAddress: city, onTheWayDate: '杭州市' }
-
-  //     }))
-  //   }
-  // }, [waybillData]);
+  }, [provinceData, areaData]);
 
   return (
     <Container>
-      <Head>佳斌物流监控系统</Head>
-      <Body>
-        <Frame width={1300} height={800} className="dashboard-data-graphics">
-          <Waybill>
-            <CardLayout
-              cardLayoutClassName="dashboard-up-and-down-card-layout-style"
-              title="运单数量"
-              titleClassName="item-title-content-style"
-            >
-              <NumCard content={waybillNum}></NumCard>
-            </CardLayout>
-          </Waybill>
-          <NumSide>
-            <Statistics>
+      <Spin size="large" tip="Loading..." spinning={loading}>
+        <Head>佳斌物流监控系统</Head>
+        <Body>
+          <Frame width={1300} height={800} className="dashboard-data-graphics">
+            <Waybill>
               <CardLayout
                 cardLayoutClassName="dashboard-up-and-down-card-layout-style"
-                title="统计数据"
+                title="运单数量"
                 titleClassName="item-title-content-style"
               >
-                {!!statisticsList &&
-                  statisticsList.length &&
-                  statisticsList.map((statisticsItem: any, index: number) => {
-                    return (
-                      <CardLayout
-                        key={`statistical${index}`}
-                        cardLayoutClassName="dashboard-left-and-right-card-layout-style"
-                        title={
-                          <>
-                            <img src={statisticsItem.statisticalIcon} alt="" />
-                          </>
-                        }
-                        titleClassName="item-title-image-style"
-                      >
+                <NumCard content={1468629 /* waybillNum */}></NumCard>
+              </CardLayout>
+            </Waybill>
+            <NumSide>
+              <Statistics>
+                <CardLayout
+                  cardLayoutClassName="dashboard-up-and-down-card-layout-style"
+                  title="统计数据"
+                  titleClassName="item-title-content-style"
+                >
+                  {!!statisticsList &&
+                    statisticsList.length &&
+                    statisticsList.map((statisticsItem: any, index: number) => {
+                      return (
                         <CardLayout
-                          cardLayoutClassName="dashboard-up-and-down-card-layout-style"
-                          title={statisticsItem.statisticalTitle}
-                          titleClassName="item-title-introduce-style"
+                          key={`statistical${index}`}
+                          cardLayoutClassName="dashboard-left-and-right-card-layout-style"
+                          title={
+                            <>
+                              <img src={statisticsItem.statisticalIcon} alt="" />
+                            </>
+                          }
+                          titleClassName="item-title-image-style"
                         >
-                          <NumData value={statisticsItem.statisticalColor}>{statisticsItem.statisticalNum}</NumData>
+                          <CardLayout
+                            cardLayoutClassName="dashboard-up-and-down-card-layout-style"
+                            title={statisticsItem.statisticalTitle}
+                            titleClassName="item-title-introduce-style"
+                          >
+                            <NumData value={statisticsItem.statisticalColor}>{statisticsItem.statisticalNum}</NumData>
+                          </CardLayout>
                         </CardLayout>
-                      </CardLayout>
+                      );
+                    })}
+                </CardLayout>
+              </Statistics>
+              <MapDiv>
+                <MapTabs>
+                  <DataTab className={`${active === 1 && 'tab-active-style'}`} onClick={() => handleTab(1)}>
+                    客户
+                  </DataTab>
+                  <DataTab className={`${active === 2 && 'tab-active-style'}`} onClick={() => handleTab(2)}>
+                    收货客户
+                  </DataTab>
+                </MapTabs>
+                <Map rData={rData} areaValueData={areaValueData}></Map>
+              </MapDiv>
+            </NumSide>
+          </Frame>
+          <Side>
+            <Frame width={500} height={280} className="goods-frame-style">
+              <CardLayout
+                cardLayoutClassName="dashboard-up-and-down-card-layout-style"
+                title="货物数量"
+                titleClassName="item-title-content-style"
+              >
+                <UnitIcon>
+                  <img src={tomImg} alt="" />
+                </UnitIcon>
+                <LineDataList>
+                  {!!unitData.length && (
+                    <LineData
+                      lineDataClassName="tom-line-data-style"
+                      valueClassName="tom-value-style"
+                      value={unitData[0].number}
+                      unitClassName="tom-unit-style"
+                      unit={unitData[0].unit}
+                    ></LineData>
+                  )}
+                  <FlowHidden>
+                    <ScrollList>
+                      {!!unitData.length &&
+                        unitData.slice(1).map((unitItem: any, index) => {
+                          return (
+                            <LineData
+                              key={`unit${index}`}
+                              lineDataClassName="tom-line-data-style"
+                              value={unitItem.number}
+                              unit={unitItem.unit}
+                            ></LineData>
+                          );
+                        })}
+                    </ScrollList>
+                  </FlowHidden>
+                </LineDataList>
+              </CardLayout>
+            </Frame>
+            <Frame width={500} height={480} className="dashboard-list-style">
+              <CardLayout
+                cardLayoutClassName="dashboard-up-and-down-card-layout-style"
+                title="在途运单"
+                titleClassName="item-title-on-the-way-style"
+              >
+                {!!waybillData &&
+                  waybillData.length &&
+                  waybillData.map((onTheWayItem, index) => {
+                    return (
+                      <ListItem
+                        key={`onTheWay${index}`}
+                        listItemClassName={`${
+                          !(index % 2)
+                            ? 'list-item-display-style'
+                            : // : index === waybillData.length - 1
+                              // ? 'item-mask-style'
+                              ''
+                        }`}
+                        number={`${onTheWayItem.orderWaybillNo}`}
+                        use={`${onTheWayItem.staffName}`}
+                        address={`${onTheWayItem.city}`}
+                        date={`${onTheWayItem.date}`}
+                      ></ListItem>
                     );
                   })}
               </CardLayout>
-            </Statistics>
-            <MapDiv>
-              <MapTabs>
-                <DataTab className={`${active === 1 && 'tab-active-style'}`} onClick={() => handleTab(1)}>
-                  客户
-                </DataTab>
-                <DataTab className={`${active === 2 && 'tab-active-style'}`} onClick={() => handleTab(2)}>
-                  收货客户
-                </DataTab>
-              </MapTabs>
-              <Map rData={rData} areaValueData={areaValueData}></Map>
-            </MapDiv>
-          </NumSide>
-        </Frame>
-        <Side>
-          <Frame width={500} height={280} className="goods-frame-style">
-            <CardLayout
-              cardLayoutClassName="dashboard-up-and-down-card-layout-style"
-              title="货物数量"
-              titleClassName="item-title-content-style"
-            >
-              <UnitIcon>
-                <img src={tomImg} alt="" />
-              </UnitIcon>
-              <LineDataList>
-                {!!unitData.length && (
-                  <LineData
-                    lineDataClassName="tom-line-data-style"
-                    valueClassName="tom-value-style"
-                    value={unitData[0].number}
-                    unitClassName="tom-unit-style"
-                    unit={unitData[0].unit}
-                  ></LineData>
-                )}
-                <FlowHidden>
-                  <ScrollList>
-                    {!!unitData.length &&
-                      unitData.slice(1).map((unitItem: any, index) => {
-                        return (
-                          <LineData
-                            key={`unit${index}`}
-                            lineDataClassName="tom-line-data-style"
-                            value={unitItem.number}
-                            unit={unitItem.unit}
-                          ></LineData>
-                        );
-                      })}
-                  </ScrollList>
-                </FlowHidden>
-              </LineDataList>
-            </CardLayout>
-          </Frame>
-          <Frame width={500} height={480} className="dashboard-list-style">
-            <CardLayout
-              cardLayoutClassName="dashboard-up-and-down-card-layout-style"
-              title="在途运单"
-              titleClassName="item-title-on-the-way-style"
-            >
-              {!!onTheWayList &&
-                onTheWayList.length &&
-                onTheWayList.map((onTheWayItem, index) => {
-                  return (
-                    <ListItem
-                      key={`onTheWay${index}`}
-                      listItemClassName={`${
-                        !((index + 1) % 2)
-                          ? 'list-item-display-style'
-                          : index === onTheWayList.length - 1
-                          ? 'item-mask-style'
-                          : ''
-                      }`}
-                      number={`${onTheWayItem.orderWaybillNo}`}
-                      use={`${onTheWayItem.staffName}`}
-                      address={`${onTheWayItem.city}`}
-                      date={`${onTheWayItem.date}`}
-                    ></ListItem>
-                  );
-                })}
-            </CardLayout>
-          </Frame>
-        </Side>
-      </Body>
+            </Frame>
+          </Side>
+        </Body>
+      </Spin>
     </Container>
   );
 };

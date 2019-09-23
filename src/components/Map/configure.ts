@@ -69,7 +69,6 @@ const config: any = {
   },
   series: [
     {
-      name: 'pm2.5',
       type: 'effectScatter',
       coordinateSystem: 'geo',
       rippleEffect: {
@@ -77,16 +76,14 @@ const config: any = {
       },
       data: [],
       symbolSize: function(val: any) {
-        return val[2] * 12;
+        return val[2] * 16;
       },
       label: {
         normal: {
-          formatter: '{b}',
-          position: 'right',
           show: false
         },
         emphasis: {
-          show: true
+          show: false
         }
       },
       itemStyle: {

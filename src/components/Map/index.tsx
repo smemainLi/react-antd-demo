@@ -29,18 +29,20 @@ function convertData(data: any, geoCoordObj: any) {
 }
 
 const Map: FC<MapProps> = props => {
-  const BMap = (window as any).BMap;
-  const myGeo = BMap && new BMap.Geocoder();
   const { rData, areaValueData } = props;
   const mapCanvas = useRef<HTMLDivElement>(null);
   const [config, setConfig] = useState<any>(_config);
 
   useEffect(() => {
     let geoCoordObj: any = {};
+    const BMap = (window as any).BMap;
+    const myGeo = BMap && new BMap.Geocoder();
     if (rData.length && areaValueData.length) {
       for (let i = 0; i < areaValueData.length; i++) {
         myGeo &&
-          myGeo.getPoint(areaValueData[i].name, function(point: any) {
+          myGeo.getPoint(`${areaValueData[i].province}${areaValueData[i].city}${areaValueData[i].name}`, function(
+            point: any
+          ) {
             if (point) {
               geoCoordObj[areaValueData[i].name] = [point.lng, point.lat];
               if (i === areaValueData.length - 1) {
@@ -50,13 +52,13 @@ const Map: FC<MapProps> = props => {
                     ..._config,
                     series: [{ ..._config.series[0], data: result }, { ..._config.series[1], data: rData }]
                   });
-                }, 200);
+                }, 300);
               }
             }
           });
       }
     }
-  }, [mapCanvas, _config, rData, areaValueData]);
+  }, [rData, areaValueData]);
 
   useEffect(() => {
     if (mapCanvas && Object.keys(config)) {

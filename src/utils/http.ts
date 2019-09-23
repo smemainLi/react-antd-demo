@@ -27,6 +27,7 @@ $axios.interceptors.response.use(
     return response.data;
   },
   error => {
+    console.log(error);
     if (error.response) {
       console.log(HTTP_ERROR[error.response.status] || `ERROR CODE: ${error.response.status}`);
     } else {

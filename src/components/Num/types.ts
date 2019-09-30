@@ -1,5 +1,5 @@
 export interface NumProps {
-  number: number;
-  // index: number;
-  // length: number;
+  cardIndex: number;
+  newNum: number;
+  lastNum: number;
 }

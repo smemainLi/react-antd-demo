@@ -1,3 +1,3 @@
 export interface NumCardProps {
-  content: number;
+  content: { newVal: string; lastVal: string };
 }

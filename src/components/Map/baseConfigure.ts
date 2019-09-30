@@ -17,30 +17,6 @@ const config: any = {
     },
     axisPointer: {}
   },
-  // legend: {
-  //   orient: 'vertical',
-  //   left: 'left',
-  //   data: ['categoryA']
-  // },
-  visualMap: {
-    type: 'piecewise',
-    left: 120,
-    bottom: 20,
-    seriesIndex: [1],
-    pieces: [
-      { gte: 5, symbol: 'circle', color: '#487BC7' },
-      { min: 3, max: 4, symbol: 'circle', color: '#5D81B7' },
-      { min: 1, max: 2, symbol: 'circle', color: '#8AA2C5' },
-      { min: 0, max: 0, symbol: 'circle', color: '#B7CCE8' }
-    ],
-    textStyle: {
-      color: '#C2C1D9',
-      width: '110%',
-      height: '110%'
-    },
-    padding: 13,
-    backgroundColor: 'rgba(18,24,59,0.39)'
-  },
   geo: {
     map: 'china',
     roam: true,
@@ -104,12 +80,6 @@ const config: any = {
           color: '#F99137'
         }
       }
-    },
-    {
-      name: 'categoryA',
-      type: 'map',
-      geoIndex: 0,
-      data: []
     }
   ]
 };

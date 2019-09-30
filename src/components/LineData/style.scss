@@ -2,13 +2,13 @@
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  padding: 12px 0;
+  padding: 20px 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.4);
 
   .line-data-value,
   .line-data-unit {
-    color: #9298AF;
-    font-size: 14px;
+    color: #9298af;
+    font-size: 16px;
     font-weight: bold;
   }
 }

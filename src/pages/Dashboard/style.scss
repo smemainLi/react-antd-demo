@@ -2,18 +2,18 @@
   display: flex;
   flex-direction: column;
   padding: 20px 40px 50px;
-
 }
 
 .dashboard-up-and-down-card-layout-style {
   display: flex;
   flex-direction: column;
+  position: relative;
 
   .item-title-content-style {
     font-size: 20px;
     color: #ffffff;
     font-weight: bold;
-    margin-bottom: 24px;
+    margin-bottom: 32px;
   }
 
   .item-title-on-the-way-style {
@@ -21,13 +21,12 @@
     color: #ffffff;
     font-weight: bold;
     margin: 20px 0 24px 28px;
-
   }
 
   .item-title-image-style {
-    width: 68px;
-    height: 68px;
-    margin-right: 20px;
+    width: 72px;
+    height: 72px;
+    margin-right: 22px;
 
     img {
       width: 100%;
@@ -36,26 +35,29 @@
   }
 
   .item-title-introduce-style {
-    font-size: 15px;
-    color: #9298AF;
+    font-size: 16px;
+    font-weight: 900;
+    color: #9298af;
   }
-
 }
 
 .dashboard-left-and-right-card-layout-style {
   display: flex;
-  margin-bottom: 16px;
+  margin-bottom: 26px;
 }
 
 .goods-frame-style {
   padding: 20px 28px 0;
 
   .tom-line-data-style {
-
+    padding: 0 0 20px 0;
     .tom-value-style {
-      color: #F99137;
-      font-size: 44px;
+      color: #f99137;
+      font-size: 48px;
       font-weight: bold;
+    }
+    .tom-unit-style {
+      font-size: 24px;
     }
   }
 }

@@ -1,0 +1,19 @@
+.space3d-group-card-item-style {
+  .new_num-style,
+  .last_num-style {
+    width: 36px;
+    height: 62px;
+    color: #ffffff;
+    font-size: 55px;
+    text-align: center;
+    line-height: 62px;
+    background-color: #6788b8;
+    position: absolute;
+    transform-origin: bottom;
+    transition: 1s linear;
+    transform: rotateX(-180deg);
+  }
+  .new_num-style {
+    transform: rotateX(-180deg);
+  }
+}

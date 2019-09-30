@@ -2,6 +2,7 @@ import React, { FC } from 'react';
 import styled from 'styled-components/macro';
 import { NumCardProps } from './types';
 import Num from '../Num';
+import { px2vw } from '../../utils/px2vw';
 
 const Container = styled.div`
   width: 100%;
@@ -9,34 +10,39 @@ const Container = styled.div`
   display: flex;
 `;
 
-const CardList = styled.div``;
+const CardList = styled.div`
+  position: relative;
+`;
 
 const Comma = styled.div`
   float: right;
   color: #ffffff;
-  font-size: 48px;
-  margin-right: 12px;
+  font-size: ${px2vw(55)};
+  margin-right: ${px2vw(12)};
 `;
 
 const NumCard: FC<NumCardProps> = props => {
-  const { content } = props;
+  const { newVal, lastVal } = props.content;
+  const reLastVal = Array.from(lastVal).reverse();
   return (
     <Container>
       <CardList>
-        {Array.from(content.toString())
-          .reverse()
-          .map((item, index) => {
-            return index !== 0 && !(index % 3) ? (
-              <React.Fragment key={`item${index}`}>
-                <Comma>,</Comma>
-                <Num key={`item${index}`} number={Number(item)}></Num>
-              </React.Fragment>
-            ) : (
-              <Num key={`item${index}`} number={Number(item)}>
-                {item}
-              </Num>
-            );
-          })}
+        {!!newVal &&
+          !!reLastVal &&
+          Array.from(newVal)
+            .reverse()
+            .map((item, index) => {
+              return index !== 0 && !(index % 3) ? (
+                <React.Fragment key={`item${index}`}>
+                  <Comma>,</Comma>
+                  <Num newNum={Number(item)} lastNum={Number(reLastVal[index])} cardIndex={index}></Num>
+                </React.Fragment>
+              ) : (
+                <Num key={`item${index}`} newNum={Number(item)} lastNum={Number(reLastVal[index])} cardIndex={index}>
+                  {item}
+                </Num>
+              );
+            })}
       </CardList>
     </Container>
   );

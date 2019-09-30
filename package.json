@@ -20,6 +20,7 @@
     "babel-preset-react-app": "^9.0.1",
     "camelcase": "^5.2.0",
     "case-sensitive-paths-webpack-plugin": "2.2.0",
+    "countup.js": "^2.0.4",
     "css-loader": "2.1.1",
     "dotenv": "6.2.0",
     "dotenv-expand": "4.2.0",
@@ -44,11 +45,16 @@
     "mini-css-extract-plugin": "0.5.0",
     "optimize-css-assets-webpack-plugin": "5.0.3",
     "pnp-webpack-plugin": "1.5.0",
-    "postcss-flexbugs-fixes": "4.1.0",
-    "postcss-loader": "3.0.0",
+    "postcss-aspect-ratio-mini": "^1.0.1",
+    "postcss-cssnext": "^3.1.0",
+    "postcss-flexbugs-fixes": "^4.1.0",
+    "postcss-loader": "^3.0.0",
     "postcss-normalize": "7.0.1",
     "postcss-preset-env": "6.7.0",
+    "postcss-px-to-viewport": "^1.1.1",
     "postcss-safe-parser": "4.0.1",
+    "postcss-viewport-units": "^0.1.6",
+    "postcss-write-svg": "^3.0.1",
     "qs": "^6.8.0",
     "react": "^16.9.0",
     "react-app-polyfill": "^1.0.2",
@@ -71,7 +77,8 @@
   "scripts": {
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
-    "test": "node scripts/test.js"
+    "test": "node scripts/test.js",
+    "upload": "yarn build && gulp upload"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -147,8 +154,15 @@
     "@types/echarts": "^4.1.13",
     "@types/qs": "^6.5.3",
     "@types/styled-components": "^4.1.19",
+    "gulp": "^4.0.2",
+    "gulp-sftp": "^0.1.5",
     "node-sass": "^4.12.0",
     "sass-loader": "^8.0.0"
+  },
+  "babelMacros": {
+    "styledComponents": {
+      "pure": true
+    }
   },
   "proxy": "http://10.10.22.146:8080"
 }
